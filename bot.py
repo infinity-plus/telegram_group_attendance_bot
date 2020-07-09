@@ -6,6 +6,9 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from config import Config
 import logging
 
+import os
+PORT = int(os.environ.get('PORT', 5000))
+
 class attendance_bot:
     def __init__(self, config):
         self.TOKEN = config.bot_api
@@ -24,7 +27,10 @@ class attendance_bot:
         dispatcher.add_handler(start_attendance_handler)
         dispatcher.add_handler(mark_attendance_handler)
         dispatcher.add_handler(end_attendance_handler)
-        updater.start_polling()
+        updater.start_webhook(listen="0.0.0.0",
+                          port=int(PORT),
+                          url_path=self.TOKEN)
+        updater.bot.setWebhook('https://telegram-group-attendance-bot.herokuapp.com/' + self.TOKEN)
 
     @run_async
     def start(self, update, context):
@@ -61,8 +67,10 @@ class attendance_bot:
                                             str1), chat_id=self.message.chat_id, message_id=self.message.message_id)
         self.flag = 0
         self.user_list=[]
+def main():
+    attendance_checker = attendance_bot(Config)
+    attendance_checker.initialize()
 
 if __name__ == '__main__':
 
-    attendance_checker = attendance_bot(Config)
-    attendance_checker.initialize()
+    main()
