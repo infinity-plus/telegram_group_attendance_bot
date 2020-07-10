@@ -31,6 +31,7 @@ class attendance_bot:
                           port=int(PORT),
                           url_path=self.TOKEN)
         updater.bot.setWebhook('https://telegram-group-attendance-bot.herokuapp.com/' + self.TOKEN)
+        updater.idle()
 
     @run_async
     def start(self, update, context):
