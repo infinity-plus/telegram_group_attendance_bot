@@ -12,7 +12,7 @@ PORT = int(os.environ.get('PORT', 5000))
 class attendance_bot:
     def __init__(self, config):
         self.TOKEN = config.bot_api
-        self.flag = 0
+        self.flag = 1
         self.user_list = []
 
     def initialize(self):
@@ -37,12 +37,15 @@ class attendance_bot:
         update.message.reply_text("Welcome")
 
     def start_attendance(self, update, context):
-        self.flag += 1
+        if (update.effective_chat.type != update.effective_chat.GROUP) or (update.effective_chat.type != update.effective_chat.SUPERGROUP):
+            context.bot.send_message(chat_id=update.effective_chat.id, text="This command can only be used in groups!")
+            return
         if self.flag != 1:
             update.message.reply_text("Please close the current attendance first")
             return
         original_member = context.bot.get_chat_member(update.effective_chat.id, update.effective_user.id)
         if original_member['status'] in ('creator', 'administrator'):
+            self.flag += 1
             keyboard = [[InlineKeyboardButton("Present", callback_data='present')]]
             reply_markup = InlineKeyboardMarkup(keyboard)
             self.message = update.message.reply_text("Please mark your attendance", reply_markup=reply_markup)
@@ -60,13 +63,20 @@ class attendance_bot:
             context.bot.answer_callback_query(callback_query_id=query.id, text="Your attendance is already marked", show_alert=True)
 
     def end_attendance(self, update, context):
+        if (update.effective_chat.type != update.effective_chat.GROUP) or (update.effective_chat.type != update.effective_chat.SUPERGROUP):
+            context.bot.send_message(chat_id=update.effective_chat.id, text="This command can only be used in groups!")
+            return
         original_member = context.bot.get_chat_member(update.effective_chat.id, update.effective_user.id)
         if original_member['status'] in ('creator', 'administrator'):
             str1=("\n".join(self.user_list))
             context.bot.edit_message_text(text="Attendance is over. {} people(s) marked attendance. Here is the list: \n {}".format(len(self.user_list),
                                             str1), chat_id=self.message.chat_id, message_id=self.message.message_id)
-        self.flag = 0
-        self.user_list=[]
+            self.flag = 0
+            self.user_list=[]
+        else:
+            update.message.reply_text("Only admins can execute this command")
+
+
 def main():
     attendance_checker = attendance_bot(Config)
     attendance_checker.initialize()
