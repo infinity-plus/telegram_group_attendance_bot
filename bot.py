@@ -72,7 +72,7 @@ class attendance_bot:
             str1=("\n".join(self.user_list))
             context.bot.edit_message_text(text="Attendance is over. {} people(s) marked attendance. Here is the list: \n {}".format(len(self.user_list),
                                             str1), chat_id=self.message.chat_id, message_id=self.message.message_id)
-            self.flag = 0
+            self.flag = 1
             self.user_list=[]
         else:
             update.message.reply_text("Only admins can execute this command")
