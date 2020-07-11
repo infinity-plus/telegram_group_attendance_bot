@@ -38,7 +38,7 @@ class attendance_bot:
         update.message.reply_text("Welcome")
 
     def start_attendance(self, update, context):
-        if (update.effective_chat.type != update.effective_chat.GROUP) or (update.effective_chat.type != update.effective_chat.SUPERGROUP):
+        if (update.effective_chat.type != update.effective_chat.GROUP) and (update.effective_chat.type != update.effective_chat.SUPERGROUP):
             context.bot.send_message(chat_id=update.effective_chat.id, text="This command can only be used in groups!")
             return
         if self.flag != 1:
@@ -64,7 +64,7 @@ class attendance_bot:
             context.bot.answer_callback_query(callback_query_id=query.id, text="Your attendance is already marked", show_alert=True)
 
     def end_attendance(self, update, context):
-        if (update.effective_chat.type != update.effective_chat.GROUP) or (update.effective_chat.type != update.effective_chat.SUPERGROUP):
+        if (update.effective_chat.type != update.effective_chat.GROUP) and (update.effective_chat.type != update.effective_chat.SUPERGROUP):
             context.bot.send_message(chat_id=update.effective_chat.id, text="This command can only be used in groups!")
             return
         original_member = context.bot.get_chat_member(update.effective_chat.id, update.effective_user.id)
