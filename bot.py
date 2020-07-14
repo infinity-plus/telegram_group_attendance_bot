@@ -16,7 +16,13 @@ class attendance_bot:
     def initialize(self):
         updater = Updater(token=self.TOKEN, use_context=True)
         dispatcher = updater.dispatcher
+
+        # Enable logging
         logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+        logger = logging.getLogger(__name__)
+        def error(update, context):
+            logger.warning('Update "%s" caused error "%s"', update, context.error)
+            
         start_handler = CommandHandler('start', self.start)
         dispatcher.add_handler(start_handler)
         start_attendance_handler = CommandHandler('start_attendance', self.start_attendance)
@@ -25,6 +31,9 @@ class attendance_bot:
         dispatcher.add_handler(start_attendance_handler)
         dispatcher.add_handler(mark_attendance_handler)
         dispatcher.add_handler(end_attendance_handler)
+
+        # log all errors
+        dispatcher.add_error_handler(error)
         updater.start_webhook(listen="0.0.0.0",
                           port=int(PORT),
                           url_path=self.TOKEN)
