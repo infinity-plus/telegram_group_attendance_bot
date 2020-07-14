@@ -51,7 +51,8 @@ class attendance_bot:
             reply_markup = InlineKeyboardMarkup(keyboard)
             self.message = update.message.reply_text("Please mark your attendance", reply_markup=reply_markup)
         else:
-            update.message.reply_text("Only admins can execute this command")
+            # update.message.reply_text("Only admins can execute this command")
+            pass
 
     @run_async
     def mark_attendance(self, update, context):
@@ -75,7 +76,8 @@ class attendance_bot:
             self.flag = 1
             self.user_list=[]
         else:
-            update.message.reply_text("Only admins can execute this command")
+            # update.message.reply_text("Only admins can execute this command")
+            pass
 
 
 def main():
