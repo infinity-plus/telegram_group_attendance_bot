@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from telegram.ext import Updater, CommandHandler, run_async, CallbackQueryHandler
+from telegram.ext import Updater, CommandHandler, run_async, CallbackQueryHandler, Filters
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 from config import Config
@@ -31,10 +31,10 @@ class attendance_bot:
         start_handler = CommandHandler('start', self.start)
         dispatcher.add_handler(start_handler)
         start_attendance_handler = CommandHandler('start_attendance',
-                                                  self.start_attendance)
+                                                  self.start_attendance, Filters.group)
         mark_attendance_handler = CallbackQueryHandler(self.mark_attendance)
         end_attendance_handler = CommandHandler('end_attendance',
-                                                self.end_attendance)
+                                                self.end_attendance, Filters.group)
         dispatcher.add_handler(start_attendance_handler)
         dispatcher.add_handler(mark_attendance_handler)
         dispatcher.add_handler(end_attendance_handler)
@@ -54,13 +54,6 @@ class attendance_bot:
         update.message.reply_text("Welcome")
 
     def start_attendance(self, update, context):
-        if (update.effective_chat.type != update.effective_chat.GROUP
-            ) and (update.effective_chat.type !=
-                   update.effective_chat.SUPERGROUP):
-            context.bot.send_message(
-                chat_id=update.effective_chat.id,
-                text="This command can only be used in groups!")
-            return
         original_member = context.bot.get_chat_member(update.effective_chat.id,
                                                       update.effective_user.id)
         if original_member['status'] in ('creator', 'administrator'):
@@ -104,13 +97,6 @@ class attendance_bot:
                 show_alert=True)
 
     def end_attendance(self, update, context):
-        if (update.effective_chat.type != update.effective_chat.GROUP
-            ) and (update.effective_chat.type !=
-                   update.effective_chat.SUPERGROUP):
-            context.bot.send_message(
-                chat_id=update.effective_chat.id,
-                text="This command can only be used in groups!")
-            return
         original_member = context.bot.get_chat_member(update.effective_chat.id,
                                                       update.effective_user.id)
         if original_member['status'] in ('creator', 'administrator'):
