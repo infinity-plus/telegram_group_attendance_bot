@@ -74,6 +74,7 @@ class attendance_bot:
                                                 == 0):
                 context.chat_data['flag'] = 1
                 context.chat_data['list'] = []
+                context.chat_data['id'] = update.effective_chat.id
                 keyboard = [[
                     InlineKeyboardButton("Present", callback_data='present')
                 ]]
@@ -112,6 +113,8 @@ class attendance_bot:
                 context.bot.send_message(
                     chat_id=update.effective_chat.id,
                     text="This command can only be used in groups!")
+                return
+            if (context.chat_data['id'] != update.effective_chat.id):
                 return
             str1 = ("\n".join(context.chat_data['list']))
             context.bot.edit_message_text(
