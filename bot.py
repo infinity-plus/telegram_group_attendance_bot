@@ -54,16 +54,16 @@ class attendance_bot:
         update.message.reply_text("Welcome")
 
     def start_attendance(self, update, context):
+        if (update.effective_chat.type != update.effective_chat.GROUP
+            ) and (update.effective_chat.type !=
+                   update.effective_chat.SUPERGROUP):
+            context.bot.send_message(
+                chat_id=update.effective_chat.id,
+                text="This command can only be used in groups!")
+            return
         original_member = context.bot.get_chat_member(update.effective_chat.id,
                                                       update.effective_user.id)
         if original_member['status'] in ('creator', 'administrator'):
-            if (update.effective_chat.type != update.effective_chat.GROUP
-                ) and (update.effective_chat.type !=
-                       update.effective_chat.SUPERGROUP):
-                context.bot.send_message(
-                    chat_id=update.effective_chat.id,
-                    text="This command can only be used in groups!")
-                return
             if ('flag' in context.chat_data) and (context.chat_data['flag']
                                                   == 1):
                 update.message.reply_text(
@@ -104,16 +104,16 @@ class attendance_bot:
                 show_alert=True)
 
     def end_attendance(self, update, context):
+        if (update.effective_chat.type != update.effective_chat.GROUP
+            ) and (update.effective_chat.type !=
+                   update.effective_chat.SUPERGROUP):
+            context.bot.send_message(
+                chat_id=update.effective_chat.id,
+                text="This command can only be used in groups!")
+            return
         original_member = context.bot.get_chat_member(update.effective_chat.id,
                                                       update.effective_user.id)
         if original_member['status'] in ('creator', 'administrator'):
-            if (update.effective_chat.type != update.effective_chat.GROUP
-                ) and (update.effective_chat.type !=
-                       update.effective_chat.SUPERGROUP):
-                context.bot.send_message(
-                    chat_id=update.effective_chat.id,
-                    text="This command can only be used in groups!")
-                return
             if (context.chat_data['id'] != update.effective_chat.id):
                 return
             str1 = ("\n".join(context.chat_data['list']))
