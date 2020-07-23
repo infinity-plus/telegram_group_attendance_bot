@@ -94,7 +94,7 @@ class attendance_bot:
                     callback_query_id=query.id,
                     text="Your attendance is already marked",
                     show_alert=True)
-        elif (choice == 'end_attendance'):
+        elif choice == 'end_attendance':
             original_member = context.bot.get_chat_member(
                 update.effective_chat.id,
                 update.effective_user.id)
@@ -119,7 +119,6 @@ class attendance_bot:
                     callback_query_id=query.id,
                     text="This command can be executed by admin only",
                     show_alert=True)
-                pass
 
 
 def main():
