@@ -9,6 +9,12 @@ import logging
 import os
 PORT = int(os.environ.get('PORT', 5000))
 
+# Enable logging
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 
 class attendance_bot:
     def __init__(self, config):
@@ -17,16 +23,6 @@ class attendance_bot:
     def initialize(self):
         updater = Updater(token=self.TOKEN, use_context=True)
         dispatcher = updater.dispatcher
-
-        # Enable logging
-        logging.basicConfig(
-            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-            level=logging.INFO)
-        logger = logging.getLogger(__name__)
-
-        def error(update, context):
-            logger.warning('Update "%s" caused error "%s"', update,
-                           context.error)
 
         start_handler = CommandHandler('start', self.start)
         dispatcher.add_handler(start_handler)
@@ -38,7 +34,7 @@ class attendance_bot:
         dispatcher.add_handler(attendance_handler)
 
         # log all errors
-        dispatcher.add_error_handler(error)
+        dispatcher.add_error_handler(self.error)
         updater.start_webhook(listen="0.0.0.0",
                               port=int(PORT),
                               url_path=self.TOKEN)
@@ -119,6 +115,10 @@ class attendance_bot:
                     callback_query_id=query.id,
                     text="This command can be executed by admin only",
                     show_alert=True)
+
+    def error(self, update, context):
+        logger.warning('Update "%s" caused error "%s"', update,
+                       context.error)
 
 
 def main():
