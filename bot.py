@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 
 from telegram.ext import Updater, CommandHandler, run_async, CallbackQueryHandler, Filters
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
+from telegram.utils.helpers import mention_markdown
 
 from config import Config
 import logging
@@ -61,7 +62,7 @@ class attendance_bot:
                 return
             elif ('flag' not in context.chat_data) or (context.chat_data['flag'] == 0):
                 context.chat_data['flag'] = 1
-                context.chat_data['list'] = list()
+                context.chat_data['attendees'] = dict()
                 context.chat_data['id'] = update.effective_chat.id
                 keyboard = [
                     [InlineKeyboardButton("Present",
@@ -79,10 +80,10 @@ class attendance_bot:
     @run_async
     def mark_attendance(self, update, context):
         query = update.callback_query
-        if ('@' + update.effective_user.username not in
-                context.chat_data['list']):
-            context.chat_data['list'].append('@' +
-                                             update.effective_user.username)
+        if (str(update.effective_user.id) not in
+                context.chat_data['attendees'].keys()):
+            context.chat_data['attendees'][str(
+                update.effective_user.id)] = f'{update.effective_user.first_name} {update.effective_user.last_name}'
             context.bot.answer_callback_query(
                 callback_query_id=query.id,
                 text="Your attendance has been marked",
@@ -103,18 +104,17 @@ class attendance_bot:
             if (context.chat_data['id'] != update.effective_chat.id):
                 return
             query.answer()
-            str1 = str()
-            for i in context.chat_data['list']:
-                str1 += i + '\n'
+            str1 = "\n".join([str(mention_markdown(id,name)) for id, name in context.chat_data['attendees'].items()])
             context.bot.edit_message_text(
                 text="Attendance is over. " +
-                str(len(context.chat_data['list'])) +
+                str(len(context.chat_data['attendees'])) +
                 " marked attendance.\n" +
                 "Here is the list:\n" + str1,
                 chat_id=self.message.chat_id,
-                message_id=self.message.message_id)
+                message_id=self.message.message_id,
+                parse_mode=ParseMode.MARKDOWN)
             context.chat_data['flag'] = 0
-            context.chat_data['list'] = []
+            context.chat_data['attendees'].clear()
         else:
             context.bot.answer_callback_query(
                 callback_query_id=query.id,
