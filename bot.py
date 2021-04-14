@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from telegram.ext import Updater, CommandHandler, run_async, CallbackQueryHandler, Filters
+from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, Filters
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
 from telegram.utils.helpers import mention_markdown
 
@@ -25,11 +25,12 @@ class attendance_bot:
         updater = Updater(token=self.TOKEN, use_context=True)
         dispatcher = updater.dispatcher
 
-        start_handler = CommandHandler('start', self.start)
+        start_handler = CommandHandler('start', self.start, run_async=True)
         dispatcher.add_handler(start_handler)
         start_attendance_handler = CommandHandler('start_attendance',
                                                   self.start_attendance,
-                                                  Filters.group)
+                                                  Filters.group,
+                                                  run_async=True)
         attendance_handler = CallbackQueryHandler(
             self.mark_attendance, pattern='^' + r'present' + '$')
         end_attendance_handler = CallbackQueryHandler(
@@ -48,7 +49,6 @@ class attendance_bot:
             self.TOKEN)
         updater.idle()
 
-    @run_async
     def start(self, update, context):
         update.message.reply_text("Welcome")
 
@@ -77,7 +77,6 @@ class attendance_bot:
             # update.message.reply_text("Only admins can execute this command")
             pass
 
-    @run_async
     def mark_attendance(self, update, context):
         query = update.callback_query
         if (str(update.effective_user.id) not in
