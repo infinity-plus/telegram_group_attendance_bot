@@ -29,7 +29,7 @@ class attendance_bot:
         dispatcher.add_handler(start_handler)
         start_attendance_handler = CommandHandler('start_attendance',
                                                   self.start_attendance,
-                                                  Filters.group,
+                                                  Filters.chat_type.groups,
                                                   run_async=True)
         attendance_handler = CallbackQueryHandler(
             self.mark_attendance, pattern='^' + r'present' + '$')
